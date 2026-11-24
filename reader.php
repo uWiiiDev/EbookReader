@@ -148,6 +148,27 @@ if (!file_exists($bookFile)) {
                 <button type="button" class="font-family-btn" data-font="sans-serif">Sans-Serif</button>
             </div>
         </div>
+
+        <div class="settings-group">
+            <span class="settings-label">Lesemodus</span>
+            <div class="flow-controls">
+                <button type="button" class="flow-btn active" data-flow="paginated" title="Seitenweise umblättern">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"></path>
+                        <polyline points="10 9 7 12 10 15"></polyline>
+                        <polyline points="14 9 17 12 14 15"></polyline>
+                    </svg>
+                    <span>Blättern</span>
+                </button>
+                <button type="button" class="flow-btn" data-flow="scrolled" title="Kontinuierlich von oben nach unten scrollen">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <polyline points="19 12 12 19 5 12"></polyline>
+                    </svg>
+                    <span>Scrollen</span>
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Reader Viewport -->

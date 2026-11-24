@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentTheme = localStorage.getItem('epub_theme') || localStorage.getItem('app_theme') || 'light';
     let currentFontSize = parseInt(localStorage.getItem('epub_font_size') || '100', 10);
     let currentFontFamily = localStorage.getItem('epub_font_family') || 'serif';
+    let currentFlow = localStorage.getItem('epub_flow') || 'paginated'; // 'paginated' or 'scrolled'
 
     const fontFamilies = {
         'serif': "'Merriweather', 'Lora', Georgia, serif",
@@ -98,7 +99,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             width: '100%',
             height: '100%',
             spread: 'none',
-            flow: 'paginated'
+            flow: currentFlow === 'scrolled' ? 'scrolled-doc' : 'paginated'
         });
 
     } catch (err) {
@@ -202,10 +203,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    function applyFlow(flow) {
+        currentFlow = flow;
+        localStorage.setItem('epub_flow', flow);
+
+        document.body.classList.toggle('mode-scrolled', flow === 'scrolled');
+        document.body.classList.toggle('mode-paginated', flow === 'paginated');
+
+        document.querySelectorAll('.flow-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-flow') === flow);
+        });
+
+        if (rendition) {
+            rendition.flow(flow === 'scrolled' ? 'scrolled-doc' : 'paginated');
+        }
+    }
+
     registerThemes();
     applyTheme(currentTheme);
     applyFontSize(currentFontSize);
     applyFontFamily(currentFontFamily);
+    applyFlow(currentFlow);
 
     // Initial Display (jump to saved CFI if available, else start at beginning)
     const initialTarget = config.initialCfi || undefined;
@@ -542,6 +560,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         btn.addEventListener('click', () => {
             const font = btn.getAttribute('data-font');
             if (font) applyFontFamily(font);
+        });
+    });
+
+    document.querySelectorAll('.flow-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const flow = btn.getAttribute('data-flow');
+            if (flow) applyFlow(flow);
         });
     });
 
