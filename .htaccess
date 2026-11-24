@@ -1,0 +1,17 @@
+# Protect sensitive files and directories
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "\.(sqlite|sqlite3|db|log|ini|env)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Enable proper MIME types and UTF-8
+AddDefaultCharset UTF-8
+AddType application/epub+zip .epub
+
+# Options
+Options -Indexes

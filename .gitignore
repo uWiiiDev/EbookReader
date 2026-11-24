@@ -1,0 +1,30 @@
+# Database & storage
+storage/*.sqlite
+storage/*.sqlite-wal
+storage/*.sqlite-shm
+storage/*.db
+storage/*.log
+
+# User books & extracted covers
+storage/books/*
+!storage/books/.gitkeep
+storage/covers/*
+!storage/covers/.gitkeep
+
+# Environment & credentials
+.env
+.env.*
+*.env
+
+# Operating system / IDE files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Temporary & test files
+tests/sample.epub
+*.tmp
+*.bak

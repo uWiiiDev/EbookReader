@@ -1,0 +1,699 @@
+/* ==========================================================================
+   Self-Hosted EPUB Reader - Reader View Styles
+   ========================================================================== */
+
+:root,
+html[data-theme="light"] {
+    --reader-bg: #ffffff;
+    --reader-text: #1a1a1a;
+    --reader-ui-bg: rgba(255, 255, 255, 0.92);
+    --reader-ui-border: #e2e8f0;
+    --reader-ui-text: #1e293b;
+    --reader-ui-muted: #64748b;
+    --reader-hover: rgba(0, 0, 0, 0.05);
+    --reader-accent: #2563eb;
+    --progress-bg: #e2e8f0;
+    --shadow-ui: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+html[data-theme="sepia"] {
+    --reader-bg: #f8f1e3;
+    --reader-text: #533f2d;
+    --reader-ui-bg: rgba(248, 241, 227, 0.94);
+    --reader-ui-border: #e6dac1;
+    --reader-ui-text: #453424;
+    --reader-ui-muted: #7d6a54;
+    --reader-hover: rgba(0, 0, 0, 0.06);
+    --reader-accent: #92400e;
+    --progress-bg: #dfceb1;
+    --shadow-ui: 0 4px 20px rgba(83, 63, 45, 0.1);
+}
+
+html[data-theme="dark"] {
+    --reader-bg: #121214;
+    --reader-text: #e4e4e7;
+    --reader-ui-bg: rgba(22, 22, 26, 0.94);
+    --reader-ui-border: #27272a;
+    --reader-ui-text: #f4f4f5;
+    --reader-ui-muted: #a1a1aa;
+    --reader-hover: rgba(255, 255, 255, 0.08);
+    --reader-accent: #3b82f6;
+    --progress-bg: #27272a;
+    --shadow-ui: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--reader-bg);
+    color: var(--reader-text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    transition: background-color 0.25s ease, color 0.25s ease;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.reader-body {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ==========================================================================
+   Header Bar
+   ========================================================================== */
+
+.reader-header {
+    height: 54px;
+    background: var(--reader-ui-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--reader-ui-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.reader-header.header-hidden {
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.header-left, .header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.book-meta-header {
+    margin-left: 0.5rem;
+    max-width: 450px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.book-meta-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--reader-ui-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+}
+
+.book-meta-author {
+    font-size: 0.75rem;
+    color: var(--reader-ui-muted);
+}
+
+.header-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.45rem 0.65rem;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--reader-ui-text);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    text-decoration: none;
+}
+
+.header-btn:hover {
+    background: var(--reader-hover);
+}
+
+.btn-text {
+    display: inline;
+}
+
+/* ==========================================================================
+   Reader Viewport & Epub Viewer
+   ========================================================================== */
+
+.reader-viewport {
+    position: fixed;
+    top: 54px;
+    bottom: 40px;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: top 0.25s ease, bottom 0.25s ease;
+}
+
+body.fullscreen-ui .reader-viewport {
+    top: 0;
+    bottom: 0;
+}
+
+.viewer {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 10;
+}
+
+/* Make epub iframe fill viewer nicely */
+.viewer iframe {
+    border: none;
+}
+
+/* Tap Zones & Navigation Arrows */
+.tap-zone {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 10%;
+    min-width: 60px;
+    max-width: 140px;
+    z-index: 25;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.tap-zone-left {
+    left: 0;
+}
+
+.tap-zone-right {
+    right: 0;
+}
+
+.tap-zone:hover {
+    opacity: 1;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.04), transparent);
+}
+
+.tap-zone-right:hover {
+    background: linear-gradient(to left, rgba(0, 0, 0, 0.04), transparent);
+}
+
+.nav-arrow-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--reader-ui-bg);
+    color: var(--reader-ui-text);
+    border: 1px solid var(--reader-ui-border);
+    box-shadow: var(--shadow-ui);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.tap-zone:hover .nav-arrow-btn {
+    transform: scale(1.08);
+}
+
+/* Loading Spinner */
+.reader-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--reader-bg);
+    z-index: 30;
+    gap: 1rem;
+    transition: opacity 0.3s ease;
+}
+
+.reader-loading.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--reader-ui-border);
+    border-top-color: var(--reader-accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   Footer Bar (Reading Progress)
+   ========================================================================== */
+
+.reader-footer {
+    height: 40px;
+    background: var(--reader-ui-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--reader-ui-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1rem;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    font-size: 0.75rem;
+    color: var(--reader-ui-muted);
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.reader-footer.footer-hidden {
+    transform: translateY(100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.footer-left {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.current-chapter-title {
+    max-width: 250px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.footer-center {
+    flex: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+.progress-bar-container {
+    width: 100%;
+    max-width: 280px;
+}
+
+.reading-progress-track {
+    height: 4px;
+    background-color: var(--progress-bg);
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.reading-progress-fill {
+    height: 100%;
+    background-color: var(--reader-accent);
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+}
+
+.reading-progress-text {
+    font-weight: 600;
+    color: var(--reader-ui-text);
+    min-width: 38px;
+    text-align: right;
+}
+
+.footer-right {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.sync-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.6875rem;
+}
+
+.sync-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #10b981;
+    transition: background-color 0.2s ease;
+}
+
+.sync-status.syncing .sync-dot {
+    background-color: #f59e0b;
+    animation: pulse 1s infinite;
+}
+
+.sync-status.error .sync-dot {
+    background-color: #ef4444;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* ==========================================================================
+   Table of Contents (TOC) Sidebar Drawer
+   ========================================================================== */
+
+.toc-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 320px;
+    max-width: 85vw;
+    background: var(--reader-ui-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-right: 1px solid var(--reader-ui-border);
+    box-shadow: var(--shadow-ui);
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toc-sidebar.open {
+    transform: translateX(0);
+}
+
+.toc-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+    z-index: 55;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+.toc-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.toc-header {
+    padding: 1.125rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--reader-ui-border);
+}
+
+.toc-header h2 {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: var(--reader-ui-text);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--reader-ui-muted);
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    color: var(--reader-ui-text);
+}
+
+.toc-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.75rem 0;
+}
+
+.toc-list {
+    list-style: none;
+}
+
+.toc-item {
+    margin: 0;
+}
+
+.toc-link {
+    display: block;
+    padding: 0.625rem 1.25rem;
+    color: var(--reader-ui-text);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: background 0.15s ease;
+    border-left: 3px solid transparent;
+    line-height: 1.4;
+}
+
+.toc-link:hover {
+    background: var(--reader-hover);
+}
+
+.toc-link.active {
+    color: var(--reader-accent);
+    background: var(--reader-hover);
+    border-left-color: var(--reader-accent);
+    font-weight: 600;
+}
+
+.toc-sublist {
+    list-style: none;
+    padding-left: 1.25rem;
+}
+
+.toc-loading,
+.toc-empty {
+    padding: 1.5rem;
+    font-size: 0.875rem;
+    color: var(--reader-ui-muted);
+    text-align: center;
+}
+
+/* ==========================================================================
+   Settings Panel (Themes, Font size, Font family)
+   ========================================================================== */
+
+.settings-panel {
+    position: fixed;
+    top: 60px;
+    right: 1rem;
+    width: 290px;
+    background: var(--reader-ui-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--reader-ui-border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-ui);
+    padding: 1.25rem;
+    z-index: 60;
+    animation: panelPop 0.18s ease-out;
+}
+
+@keyframes panelPop {
+    from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.settings-group {
+    margin-bottom: 1.25rem;
+}
+
+.settings-group:last-child {
+    margin-bottom: 0;
+}
+
+.settings-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--reader-ui-muted);
+    margin-bottom: 0.625rem;
+}
+
+/* Theme buttons */
+.theme-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+
+.theme-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: all 0.15s ease;
+}
+
+.theme-preview {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.theme-light {
+    background-color: #f1f5f9;
+    color: #1e293b;
+}
+.theme-light .theme-preview {
+    background: #ffffff;
+}
+
+.theme-sepia {
+    background-color: #ebdcc0;
+    color: #453424;
+}
+.theme-sepia .theme-preview {
+    background: #fbf0d9;
+}
+
+.theme-dark {
+    background-color: #27272a;
+    color: #f4f4f5;
+}
+.theme-dark .theme-preview {
+    background: #141416;
+}
+
+.theme-btn.active {
+    border-color: var(--reader-accent);
+}
+
+/* Font Size Controls */
+.font-size-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--reader-hover);
+    border-radius: 8px;
+    padding: 0.25rem 0.5rem;
+}
+
+.font-btn {
+    background: transparent;
+    border: none;
+    color: var(--reader-ui-text);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.font-btn:hover {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.font-size-display {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--reader-ui-text);
+}
+
+/* Font Family Controls */
+.font-family-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.font-family-btn {
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--reader-ui-border);
+    background: transparent;
+    color: var(--reader-ui-text);
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.font-family-btn.active {
+    background: var(--reader-accent);
+    color: #ffffff;
+    border-color: var(--reader-accent);
+}
+
+/* ==========================================================================
+   Responsive Adaptations
+   ========================================================================== */
+
+@media (max-width: 640px) {
+    .btn-text {
+        display: none;
+    }
+
+    .book-meta-header {
+        max-width: 180px;
+    }
+
+    .footer-left {
+        display: none;
+    }
+
+    .tap-zone {
+        width: 18%;
+        min-width: 48px;
+    }
+
+    .nav-arrow-btn {
+        width: 36px;
+        height: 36px;
+    }
+
+    .settings-panel {
+        right: 0.5rem;
+        left: 0.5rem;
+        width: auto;
+    }
+}
