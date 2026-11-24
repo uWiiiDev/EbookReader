@@ -99,7 +99,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             width: '100%',
             height: '100%',
             spread: 'none',
-            flow: currentFlow === 'scrolled' ? 'scrolled-doc' : 'paginated'
+            flow: currentFlow === 'scrolled' ? 'scrolled' : 'paginated',
+            manager: 'continuous'
         });
 
     } catch (err) {
@@ -215,8 +216,31 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         if (rendition) {
-            rendition.flow(flow === 'scrolled' ? 'scrolled-doc' : 'paginated');
+            rendition.flow(flow === 'scrolled' ? 'scrolled' : 'paginated');
+            setTimeout(setupScrollObserver, 300);
         }
+    }
+
+    // Scroll observer to seamlessly load subsequent chapters when scrolling near bottom
+    let isFetchingNextChapter = false;
+    function setupScrollObserver() {
+        const scroller = viewerEl.querySelector('.epub-container') || viewerEl;
+        if (!scroller || scroller._hasScrollObserver) return;
+        scroller._hasScrollObserver = true;
+
+        scroller.addEventListener('scroll', () => {
+            if (currentFlow !== 'scrolled' || isFetchingNextChapter) return;
+
+            const remaining = scroller.scrollHeight - (scroller.scrollTop + scroller.clientHeight);
+            if (remaining < 450) {
+                isFetchingNextChapter = true;
+                rendition.next().then(() => {
+                    setTimeout(() => { isFetchingNextChapter = false; }, 400);
+                }).catch(() => {
+                    isFetchingNextChapter = false;
+                });
+            }
+        }, { passive: true });
     }
 
     registerThemes();
@@ -232,6 +256,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     rendition.on('rendered', () => {
+        setupScrollObserver();
         if (loadingEl) {
             loadingEl.classList.add('fade-out');
             setTimeout(() => loadingEl.remove(), 400);
@@ -493,7 +518,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const dy = touchEndY - touchStartY;
                 const timeDiff = Date.now() - touchStartTime;
 
-                if (timeDiff < 500 && Math.abs(dx) > 45 && Math.abs(dy) < Math.abs(dx) * 0.8) {
+                if (currentFlow === 'paginated' && timeDiff < 500 && Math.abs(dx) > 45 && Math.abs(dy) < Math.abs(dx) * 0.8) {
                     if (dx < 0) {
                         rendition.next();
                     } else {

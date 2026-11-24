@@ -697,11 +697,24 @@ body.fullscreen-ui .reader-viewport {
     border-color: var(--reader-accent);
 }
 
-/* In Scrolled Mode: allow viewport & container to scroll naturally */
+/* In Scrolled Mode: allow epub-container to scroll smoothly and continuously */
 body.mode-scrolled .reader-viewport {
+    overflow: hidden !important;
+}
+
+body.mode-scrolled .viewer {
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+}
+
+body.mode-scrolled .viewer .epub-container {
+    width: 100% !important;
+    height: 100% !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
     -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
 }
 
 body.mode-scrolled .tap-zone {
